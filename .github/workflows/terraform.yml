@@ -5,6 +5,15 @@ on:
     branches:
       - master
   workflow_dispatch: 
+    inputs:
+      action:
+        description: "select terraform action"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
 
 jobs:
   terraform:
@@ -28,8 +37,22 @@ jobs:
         - name: Terraform Init
           run: terraform init
 
-        - name: Terraform Plan
+        # 🔹 Push pe automatically Plan chale
+        - name: Terraform Plan (Push)
+          if: github.event_name == 'push'
           run: terraform plan
 
-        - name: Terraform Apply
+        # 🔹 Push pe automatically Apply chale
+        - name: Terraform Apply (Push)
+          if: github.event_name == 'push'
           run: terraform apply -auto-approve
+
+        # 🔹 Manual pe Apply
+        - name: Terraform Apply (Manual)
+          if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
+          run: terraform apply -auto-approve
+
+        # 🔹 Manual pe Destroy
+        - name: Terraform Destroy (Manual)
+          if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
+          run: terraform destroy -auto-approve
