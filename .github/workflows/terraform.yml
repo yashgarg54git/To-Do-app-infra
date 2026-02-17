@@ -1,4 +1,4 @@
-name: vm_tf_code
+name: frontend_vm_tf_code
 
 on: 
   push:
